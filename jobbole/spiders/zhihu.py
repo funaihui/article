@@ -21,7 +21,7 @@ class ZhihuSpider(scrapy.Spider):
     allowed_domains = ['www.zhihu.com']
     start_urls = ['http://www.zhihu.com/']
     account = "18317773572"
-    passwd = "1151631351fnh"
+    passwd = ""
     agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/60.0.3112.113 Chrome/60.0.3112.113 Safari/537.36"
     header = {
         "Host": "www.zhihu.com",
@@ -157,12 +157,3 @@ class ZhihuSpider(scrapy.Spider):
         captcha = input("请输入验证码：\n>")
         # 手动输入验证码后进行登录
         return Request("https://www.zhihu.com", headers=self.header, callback=self.login, meta={'captcha': captcha})
-
-    # 判断是否登录
-    def is_login(self, response):
-        pass
-        # code = Request(setting, headers=self.header)
-        # if code == 200:
-        #     return True
-        # else:
-        #     return False
