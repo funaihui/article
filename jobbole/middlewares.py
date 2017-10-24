@@ -6,6 +6,7 @@
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from fake_useragent import UserAgent
 
 
 class JobboleSpiderMiddleware(object):
@@ -54,3 +55,39 @@ class JobboleSpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+class RandomUserAgentMiddleware(object):
+    def __init__(self, crawler):
+        super(RandomUserAgentMiddleware, self).__init__()
+
+        self.ua = UserAgent()
+        self.ua_type = crawler.settings.get("RANDOM_UA_TYPE", "random")
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler)
+
+    # 设置User-Agent
+    def process_request(self, request, spider):
+        def get_ua():
+            return getattr(self.ua, self.ua_type)
+
+        request.headers.setdefault("User-Agent", get_ua())
+        request.meta["proxy"] = ""
+
+
+from selenium import webdriver
+from scrapy.http import HtmlResponse
+
+
+
+class JSPageMiddleware(object):
+    def process_request(self, request, spider):
+        if spider.name == "jobbole_spider":
+            spider.browser.get(request.url)
+            import time
+            time.sleep(3)
+            print("访问:{0}".format(request.url))
+            return HtmlResponse(url=spider.browser.current_url, body=spider.browser.page_source, encoding="utf-8",
+                                request=request)

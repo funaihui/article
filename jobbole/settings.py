@@ -52,9 +52,11 @@ ROBOTSTXT_OBEY = False
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'jobbole.middlewares.MyCustomDownloaderMiddleware': 543,
-# }
+DOWNLOADER_MIDDLEWARES = {
+   # 'jobbole.middlewares.RandomUserAgentMiddleware': 543,
+   'jobbole.middlewares.JSPageMiddleware': 1,
+   'jobbole.middlewares.MyCustomDownloaderMiddleware': None,
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -102,3 +104,5 @@ MYSQL_DBNAME = "article"
 MYSQL_PASSWORD = "wizardev"
 MYSQL_USER = "root"
 SQL_DATETIME_FORMAT="%Y-%m-%d %H:%M:%S"
+
+RANDOM_UA_TYPE = "random"

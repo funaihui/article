@@ -7,24 +7,37 @@ from urllib import parse
 from jobbole.items import JobBoleArticleItem,ArticleItemLoader
 from jobbole.utils.comman import get_md5
 from scrapy.loader import ItemLoader
-
+from selenium import webdriver
+from scrapy.xlib.pydispatch import dispatcher
+from scrapy import signals
 
 class JobboleSpiderSpider(scrapy.Spider):
     name = 'jobbole_spider'
     allowed_domains = ['jobbole.com']
     start_urls = ['http://blog.jobbole.com/all-posts/']
 
-    def parse(self, response):
+    def __init__(self):
+        self.browser = webdriver.Chrome(executable_path="/home/wizardev/article/chromedriver")
+        super(JobboleSpiderSpider, self).__init__()
+        # spider_closed一定不能带括号
+        dispatcher.connect(self.spider_closed,signals.spider_closed)
 
-        post_nodes = response.css("#archive .floated-thumb .post-thumb a")
-        for post_node in post_nodes:
-            img_url = post_node.css("img::attr(src)").extract_first("")
-            post_url = post_node.css("::attr(href)").extract_first("")
-            yield Request(url=parse.urljoin(response.url, post_url), meta={"front_img_url": img_url},
-                          callback=self.parse_tetail)
-        next_url = response.css(".next.page-numbers::attr(href)").extract_first("")
-        if next_url:
-            yield Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
+    def spider_closed(self,spider):
+        print("closed")
+        self.browser.quit()
+
+    def parse(self, response):
+        pass
+
+        # post_nodes = response.css("#archive .floated-thumb .post-thumb a")
+        # for post_node in post_nodes:
+        #     img_url = post_node.css("img::attr(src)").extract_first("")
+        #     post_url = post_node.css("::attr(href)").extract_first("")
+        #     yield Request(url=parse.urljoin(response.url, post_url), meta={"front_img_url": img_url},
+        #                   callback=self.parse_tetail)
+        # next_url = response.css(".next.page-numbers::attr(href)").extract_first("")
+        # if next_url:
+        #     yield Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
 
     def parse_tetail(self, response):
         # article_item = JobBoleArticleItem()#初始化item
